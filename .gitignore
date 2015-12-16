@@ -31,4 +31,5 @@
 # Debug files
 *.dSYM/
 
-[0-9]
+# Quote files
+[0-9]*
