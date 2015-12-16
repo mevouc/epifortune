@@ -1,2 +1,2 @@
 # epifortune
-A fortune-like program with quote from epiquote.fr
+A fortune-like program with quote from [Epiquote](http://epiquote.fr)
