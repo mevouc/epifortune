@@ -1,10 +1,13 @@
 # include "html_operations.h"
 
-int main()
+int main(int argc, char **argv)
 {
-	FILE* file = fopen("806", "r");
-	file = find_first_blockquote(file);
-	printf("%s\n", reformat(get_blockquote(file)));
-	return 0;
+  if(argc > 1)
+  {
+    FILE* file = fopen(argv[1], "r");
+    file = find_first_blockquote(file);
+    printf("%s\n", reformat_soft(reformat(get_blockquote(file))));
+  }
+  return 0;
 }
 

@@ -1,7 +1,7 @@
 CC=clang
 
 CPPFLAGS=
-CFLAGS= -Wall -Wextra -pedantic -std=c99 -D_XOPEN_SOURCE=600 -O3
+CFLAGS= -Wall -Wextra -pedantic -std=c99 -D_XOPEN_SOURCE=600 -O0 -g
 LDFLAGS=
 LDLIBS=
 
