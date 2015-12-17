@@ -2,7 +2,9 @@
 
 int main()
 {
-	printf("%ld\n", get_max());
+	FILE* file = fopen("43", "r");
+	file = find_first_blockquote(file);
+	printf("%s\n", get_blockquote(file));
 	return 0;
 }
 

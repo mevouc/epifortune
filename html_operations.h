@@ -1,8 +1,8 @@
 # include <stdio.h>
 # include <stdlib.h>
 
-long get_max(void);
+FILE* find_first_blockquote(FILE* file);
 
-long find_last(FILE* file);
+char* get_blockquote(FILE *file);
 
-void print_quote(long nb);
+void print_file(FILE *file);
