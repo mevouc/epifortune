@@ -4,7 +4,7 @@
 long get_max()
 {
 	long max = 0;
-	system("wget http://epiquote.fr/last -O 0");
+	system("wget -q http://epiquote.fr/last -O 0");
 	FILE* last = fopen("0", "r");
 	if(!last)
 		err(1, "Fail to get the max value of quotes.");

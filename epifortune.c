@@ -1,7 +1,8 @@
 # include "html_operations.h"
 
-int main(int argc, char* argv[])
+int main()
 {
+	printf("%ld\n", get_max());
 	return 0;
 }
 
