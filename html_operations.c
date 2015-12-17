@@ -98,6 +98,44 @@ char* get_quote(long nb)
 	return blockquote;
 }
 
+char* reformat(char *html)
+{
+	size_t len = strlen(html);
+	char *new = calloc(len, sizeof(char));
+	size_t i = 0;
+	size_t j = 0;
+	for( ; i < len && html[i] != '\n'; i++);
+	i++;
+	while(i < len)
+	{
+		if(html[i] == '&')
+		{
+			char *s = calloc(32, sizeof(char));
+			sscanf(html + i, "&%s;", s);
+			if(s[0] == '#')
+			{
+				int c;
+				sscanf(s, "#%d", &c);
+				new[j++] = c;
+			}
+			else if(!strncmp(s, "lt", 2))
+				new[j++] = '<';
+			else if(!strncmp(s, "gt", 2))
+				new[j++] = '>';
+			for( ; html[i] != ';'; i++);
+			free(s);
+		}
+		else
+			new[j++] = html[i];
+
+		i++;
+	}
+
+	free(html);
+	html = new;
+	return new;
+}
+
 void print_file(FILE *file)
 {
 	char c = EOF;

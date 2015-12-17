@@ -2,9 +2,9 @@
 
 int main()
 {
-	FILE* file = fopen("43", "r");
+	FILE* file = fopen("806", "r");
 	file = find_first_blockquote(file);
-	printf("%s\n", get_blockquote(file));
+	printf("%s\n", reformat(get_blockquote(file)));
 	return 0;
 }
 

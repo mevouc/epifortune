@@ -5,4 +5,10 @@ FILE* find_first_blockquote(FILE* file);
 
 char* get_blockquote(FILE *file);
 
+char* get_random_quote(void);
+
+char* get_quote(long nb);
+
+char* reformat(char *html);
+
 void print_file(FILE *file);
