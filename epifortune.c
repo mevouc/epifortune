@@ -4,7 +4,7 @@ int main(int argc, char **argv)
 {
   if(argc > 1)
   {
-    printf("%s", reformat_soft(reformat(get_quote(strtol(argv[1], NULL,10)))));
+    printf("%s", reformat_soft(reformat(get_quote(strtoul(argv[1], NULL,10)))));
   }
   else
     printf("%s", reformat_soft(reformat(get_random_quote())));

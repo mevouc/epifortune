@@ -93,17 +93,17 @@ char* get_random_quote(void)
   return blockquote;
 }
 
-char* get_quote(long nb)
+char* get_quote(unsigned long nb)
 {
   if(nb > 999999)
   {
-    err(1, "There is clearly not so much quotes.");
+    err(1, "There are clearly not so much quotes.");
     return NULL;
   }
   char *wget = calloc(32, sizeof(char));
   wget = strcpy(wget, "wget -q http://epiquote.fr/");
   char *number = calloc(24, sizeof(char));
-  sprintf(number, "%ld", nb);
+  sprintf(number, "%lu", nb);
   wget = strcat(wget, number);
   system(wget);
   free(wget);
@@ -111,7 +111,7 @@ char* get_quote(long nb)
   char *blockquote = NULL;
   if(!file)
   {
-    err(1, "Fail to read the quote #%ld.\n", nb);
+    err(1, "Fail to read the quote #%lu.\n", nb);
     free(number);
     return NULL;
   }
