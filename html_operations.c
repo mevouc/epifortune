@@ -92,7 +92,6 @@ char* get_random_quote(void)
   }
   else
   {
-    printf("NOT NULL\n");
     blockquote = get_blockquote(find_first_blockquote(file));
     fclose(file);
   }
