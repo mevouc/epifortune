@@ -47,10 +47,30 @@ char* get_blockquote(FILE *file)
         count += 10;
     }
   }
-  char *quote = calloc(count + 1, sizeof(char));
+  char *quote = calloc(count + 2, sizeof(char));
   fsetpos(file, begin);
-  for(size_t i = 0; i < count - 1; i++)
-    quote[i] = fgetc(file);
+  int stop = 0;
+  size_t endblockquote = 0;
+  for(size_t i = 0; i < count + 2 && !stop; i++)
+  {
+    char c = fgetc(file);
+    if(c == '<')
+      endblockquote++;
+    if(endblockquote == 1 && c == '/')
+      endblockquote++;
+    if(endblockquote == 2 && c == 'b')
+      stop = 1;
+    if(c == EOF)
+      stop = 1;
+    quote[i] = c;
+  }
+  if(endblockquote)
+  {
+    size_t i = 0;
+    for(i = strlen(quote); i > 0 && quote[i] != '\n'; i--);
+    if(quote[i] == '\n')
+      quote[i] = '\0';
+  }
   free(blockquote);
   return quote;
 }
@@ -67,7 +87,7 @@ char* get_random_quote(void)
     blockquote = get_blockquote(find_first_blockquote(file));
     fclose(file);
   }
-  system("rm -f ./0");
+  //system("rm -f ./0");
   return blockquote;
 }
 
@@ -93,7 +113,7 @@ char* get_quote(long nb)
   rmf = strcpy(rmf, "rm -f ");
   rmf = strcat(rmf, number);
   free(number);
-  system(rmf);
+  //system(rmf);
   free(rmf);
   return blockquote;
 }
@@ -166,6 +186,20 @@ char* reformat(char *html)
         j += k;
         new[j++] = '\n';
         i--;
+      }
+      else if(!strncmp(html + i, "</small>", 8))
+        i += 7;
+      else if(!strncmp(html + i, "</p>", 4))
+      {
+        i += 3;
+        new[j++] = '\n';
+      }
+      else if(!strncmp(html + i, "<p>", 3))
+        i += 2;
+      else if(!strncmp(html + i, "<br />", 6))
+      {
+        i += 5;
+        new[j++] = '\n';
       }
       else
         new[j++] = html[i];
