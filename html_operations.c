@@ -238,7 +238,6 @@ char* reformat(char *html)
   }
 
   free(html);
-  html = new;
   return new;
 }
 
