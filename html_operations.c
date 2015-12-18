@@ -77,16 +77,22 @@ char* get_blockquote(FILE *file)
 
 char* get_random_quote(void)
 {
-  system("wget -q http://epiquote.fr/random -O ./0");
+  int ret = system("wget -q http://epiquote.fr/random -O ./0");
+  if(ret != 0)
+  {
+    errx(1, "Fail to get a random quote.");
+    return NULL;
+  }
   FILE *file = fopen("0", "r");
   char *blockquote = NULL;
   if(!file)
   {
-    err(1, "Fail to get a list of random quotes.\n");
+    errx(1, "Fail to get a random quote.");
     return NULL;
   }
   else
   {
+    printf("NOT NULL\n");
     blockquote = get_blockquote(find_first_blockquote(file));
     fclose(file);
   }
@@ -97,7 +103,7 @@ char* get_quote(unsigned long nb)
 {
   if(nb > 999999)
   {
-    err(1, "There are clearly not so much quotes.");
+    errx(1, "There are clearly not so much quotes.");
     return NULL;
   }
   char *wget = calloc(32, sizeof(char));
@@ -111,7 +117,7 @@ char* get_quote(unsigned long nb)
   char *blockquote = NULL;
   if(!file)
   {
-    err(1, "Fail to read the quote #%lu.\n", nb);
+    errx(1, "Fail to read the quote #%lu.", nb);
     free(number);
     return NULL;
   }
