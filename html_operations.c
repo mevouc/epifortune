@@ -47,7 +47,7 @@ char* get_blockquote(FILE *file)
         count += 10;
     }
   }
-  char *quote = calloc(count + 2, sizeof(char));
+  char *quote = calloc(count * 2, sizeof(char));
   fsetpos(file, begin);
   int stop = 0;
   size_t endblockquote = 0;
@@ -121,14 +121,14 @@ char* get_quote(long nb)
 char* reformat_soft(char *old)
 {
   size_t len = strlen(old);
-  char *new = calloc(len, sizeof(char));
+  char *new = calloc(2 * len, sizeof(char));
   size_t i = 0;
   size_t j = 0;
   while(i < len)
   {
     if(old[i] == '&')
     {
-      char *s = calloc(32, sizeof(char));
+      char *s = calloc(256, sizeof(char));
       sscanf(old + i, "&%s;", s);
       if(s[0] == '#')
       {
@@ -140,6 +140,8 @@ char* reformat_soft(char *old)
         new[j++] = '<';
       else if(!strncmp(s, "gt", 2))
         new[j++] = '>';
+      else if(!strncmp(s, "quot", 4))
+        new[j++] = '"';
       for( ; old[i] != ';'; i++);
       free(s);
     }
@@ -150,14 +152,13 @@ char* reformat_soft(char *old)
   }
 
   free(old);
-  old = new;
   return new;
 }
 
 char* reformat(char *html)
 {
   size_t len = strlen(html);
-  char *new = calloc(len, sizeof(char));
+  char *new = calloc(2 * len, sizeof(char));
   size_t i = 0;
   size_t j = 0;
   for( ; i < len && html[i] != '\n'; i++);
