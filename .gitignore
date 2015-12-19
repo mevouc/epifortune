@@ -37,3 +37,6 @@
 # Editor files
 *.swp
 *~
+
+# Binary
+epifortune
