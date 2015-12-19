@@ -40,7 +40,7 @@ char* get_blockquote(FILE *file)
       fgets(blockquote, 12, file);
       if(!strncmp("/blockquote", blockquote, 12))
       {
-        count -= 12;
+        //count -= 12;
         end = 1;
       }
       else
@@ -49,6 +49,7 @@ char* get_blockquote(FILE *file)
   }
   char *quote = calloc(count * 2, sizeof(char));
   fsetpos(file, begin);
+  free(begin);
   int stop = 0;
   size_t endblockquote = 0;
   for(size_t i = 0; i < count + 2 && !stop; i++)
@@ -56,12 +57,16 @@ char* get_blockquote(FILE *file)
     char c = fgetc(file);
     if(c == '<')
       endblockquote++;
-    if(endblockquote == 1 && c == '/')
+    else if(endblockquote == 1 && c == '/')
       endblockquote++;
-    if(endblockquote == 2 && c == 'b')
+    else if(endblockquote == 2 && c == 'b')
+      endblockquote++;
+    else if(endblockquote == 3 && c == 'l')
       stop = 1;
-    if(c == EOF)
+    else if(c == EOF)
       stop = 1;
+    else
+      endblockquote = 0;
     quote[i] = c;
   }
   if(endblockquote)
@@ -139,7 +144,8 @@ char* reformat_soft(char *old)
   char *new = calloc(2 * len, sizeof(char));
   size_t i = 0;
   size_t j = 0;
-  while(i < len)
+  int stop = 0;
+  while(i < len && !stop)
   {
     if(old[i] == '&')
     {
@@ -160,6 +166,12 @@ char* reformat_soft(char *old)
       for( ; old[i] != ';'; i++);
       free(s);
     }
+    else if(old[i] == '\0')
+    {
+      new[j] = '\0';
+      i--;
+      stop = 1;
+    }
     else
       new[j++] = old[i];
 
@@ -177,11 +189,17 @@ char* reformat(char *html)
   size_t i = 0;
   size_t j = 0;
   for( ; i < len && html[i] != '\n'; i++);
-  while(i < len)
+  int stop = 0;
+  while((i < len) && !stop)
   {
     if(html[i] == '\n')
     {
       for( ; html[i + 1] == ' '; i++);
+    }
+    else if(html[i] == ' ')
+    {
+      for( ; html[i + 1] == ' '; i++);
+      new[j++] = ' ';
     }
     else if(html[i] == '<')
     {
@@ -246,6 +264,12 @@ char* reformat(char *html)
         new[j++] = html[i];
       free(s);
     }
+    else if(html[i] == '\0')
+    {
+      new[j] = '\0';
+      i--;
+      stop = 1;
+    }
     else
       new[j++] = html[i];
 
@@ -253,6 +277,10 @@ char* reformat(char *html)
   }
 
   free(html);
+  for( ; i > 0 && (new[i] == '\0' || new[i] == '\n'); i--);
+  if((i > 0) && (i + 1 < len))
+    if((new[i + 1] == '\n') && (i + 2 < len))
+      new[i + 2] = '\0';
   return new;
 }
 
