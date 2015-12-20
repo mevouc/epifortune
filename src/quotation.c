@@ -185,20 +185,31 @@ struct quotation* reformat(struct quotation *quotation)
   return quotation;
 }
 
-void print_quotation(struct quotation *quotation)
+void print_quotation(struct quotation *quotation, int a, int c, int q, int n)
 {
-  puts(quotation->author);
-  for(size_t i = 0; i < strlen(quotation->author); i++)
-    putchar('=');
-  putchar('\n');
-  if(quotation->context)
+  if(a)
   {
-    puts(quotation->context);
-    for(size_t i = 0; i < strlen(quotation->context); i++)
-      putchar('-');
+    puts(quotation->author);
+    for(size_t i = 0; i < strlen(quotation->author); i++)
+      putchar('=');
     putchar('\n');
   }
-  putchar('\n');
-  puts(quotation->quote);
-  printf("\n#%lu\n", quotation->number);
+  if(c)
+  {
+    if(quotation->context)
+    {
+      puts(quotation->context);
+      for(size_t i = 0; i < strlen(quotation->context); i++)
+        putchar('-');
+      putchar('\n');
+    }
+  }
+  if((a || c) && (q || n))
+    putchar('\n');
+  if(q)
+    puts(quotation->quote);
+  if(q && n)
+    putchar('\n');
+  if(n)
+    printf("#%lu\n", quotation->number);
 }

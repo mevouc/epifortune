@@ -18,6 +18,6 @@ struct quotation* get_unformatted(char *blockquote);
 
 struct quotation* reformat(struct quotation *quotation);
 
-void print_quotation(struct quotation *quotation);
+void print_quotation(struct quotation *quotation, int a, int c, int q, int n);
 
 # endif

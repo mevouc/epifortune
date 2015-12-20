@@ -1,27 +1,78 @@
 # include "epifortune.h"
 # include "html_operations.h"
 # include "quotation.h"
+# include <string.h>
 
 int main(int argc, char **argv)
 {
-  if(argc > 1)
+  int help = 0;
+  unsigned long number = 0;
+  int a = 0;
+  int c = 0;
+  int q = 0;
+  int n = 0;
+  int i = 1;
+  while(i < argc)
   {
-    char *str = get_quote(strtoul(argv[1], NULL,10));
-    struct quotation *q = get_unformatted(str);
-    print_quotation(reformat(q));
-    free(str);
-    free_quotation(q);
+    if(!strncmp("-h", argv[i], 2) || !strncmp("--help", argv[i], 6))
+      help = 1;
+    else if(!strncmp("-n", argv[i], 2) || !strncmp("--number", argv[i], 8))
+    {
+      if(i + 1 < argc)
+        number = strtoul(argv[++i], NULL, 10);
+    }
+    else if(!strncmp("-c", argv[i], 2) || !strncmp("--conceal", argv[i], 9))
+    {
+      if(i + 1 < argc)
+      {
+        i++;
+        for(size_t j = 0; j < strlen(argv[i]); j++)
+        {
+          switch(argv[i][j])
+          {
+            case 'a':
+              a = 1;
+              break;
+            case 'c':
+              c = 1;
+              break;
+            case 'q':
+              q = 1;
+              break;
+            case 'n':
+              n = 1;
+              break;
+            default:
+              break;
+          }
+        }
+      }
+    }
+    i++;
   }
+  if(help)
+    print_help();
   else
   {
-    char *str = get_random_quote();
-    struct quotation *q = get_unformatted(str);
-    print_quotation(reformat(q));
-    free(str);
-    free_quotation(q);
+    if(number)
+    {
+      run_on_quote(get_quote(number), !a, !c, !q, !n);
+    }
+    else
+    {
+      run_on_quote(get_random_quote(), !a, !c, !q, !n);
+    }
   }
-  system("rm -f [0-9]*");
   return 0;
+}
+
+void run_on_quote(char *blockquote, int a, int c, int q, int n)
+{
+  struct quotation *quotation = get_unformatted(blockquote);
+  print_quotation(reformat(quotation), a, c, q, n);
+  free(blockquote);
+  free_quotation(quotation);
+  system("rm -f [0-9]*");
 }
 
 void print_help(void)
@@ -32,7 +83,8 @@ void print_help(void)
   printf("  -n | --number number  Print the number-th quote. If this option ");
   printf("is not set,\n");
   printf("                        a random quote will be printed.\n");
-  printf("  -c | --conceal acqn   Hide one or more infos about the quotation:");
+  printf("  -c | --conceal acqn   Hide one or more infos about the ");
+  printf("quotation:\n");
   printf("                          * a - Author\n");
   printf("                          * c - Context\n");
   printf("                          * q - Quote\n");
