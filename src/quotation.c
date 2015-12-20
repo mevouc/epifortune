@@ -167,6 +167,12 @@ char* reformat_str(char *html)
       }
       free(spec);
     }
+    else if(html[i] == ' ')
+    {
+      for( ; i < len && html[i] == ' '; i++);
+      i--;
+      str[j] = ' ';
+    }
     else
       str[j] = html[i];
     i++;
@@ -178,16 +184,54 @@ char* reformat_str(char *html)
 
 char* wrap80col(char *str)
 {
-  return NULL;
+  size_t len = strlen(str);
+  size_t i = 0;
+  size_t last_space = 0;
+  size_t count = 0;
+  while(i < len)
+  {
+    count++;
+    if(str[i] == '\n')
+      count = 0;
+    if(str[i] == ' ')
+      last_space = i;
+    if(count == 80)
+    {
+      str[last_space] = '\n';
+      i = last_space;
+      count = 0;
+    }
+    i++;
+  }
+  return str;
 }
 
 struct quotation* reformat(struct quotation *quotation)
 {
-  quotation->author = reformat_str(quotation->author);
+  quotation->author = wrap80col(reformat_str(quotation->author));
   if(quotation->context)
-    quotation->context = reformat_str(quotation->context);
-  quotation->quote = reformat_str(quotation->quote);
+    quotation->context = wrap80col(reformat_str(quotation->context));
+  quotation->quote = wrap80col(reformat_str(quotation->quote));
   return quotation;
+}
+
+size_t maxlinelen(char *str)
+{
+  size_t max = 0;
+  size_t len = strlen(str);
+  size_t i = 0;
+  size_t count = 0;
+  while(i < len)
+  {
+    if(str[i] == '\n')
+    {
+      max = count > max ? count : max;
+      count = 0;
+    }
+    count++;
+    i++;
+  }
+  return max ? max : len;
 }
 
 void print_quotation(struct quotation *quotation, int a, int c, int q, int n)
@@ -195,7 +239,7 @@ void print_quotation(struct quotation *quotation, int a, int c, int q, int n)
   if(a)
   {
     puts(quotation->author);
-    for(size_t i = 0; i < strlen(quotation->author); i++)
+    for(size_t i = 0; i < maxlinelen(quotation->author); i++)
       putchar('=');
     putchar('\n');
   }
@@ -204,7 +248,7 @@ void print_quotation(struct quotation *quotation, int a, int c, int q, int n)
     if(quotation->context)
     {
       puts(quotation->context);
-      for(size_t i = 0; i < strlen(quotation->context); i++)
+      for(size_t i = 0; i < maxlinelen(quotation->context); i++)
         putchar('-');
       putchar('\n');
     }

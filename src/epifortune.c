@@ -55,7 +55,7 @@ int main(int argc, char **argv)
   }
   if(shit)
   {
-    printf("Unknown option: \"%s\".\n", argv[shit]);
+    printf("epifortune: Invalid option '%s'\n", argv[shit]);
     print_help();
   }
   else if(help)
