@@ -5,7 +5,7 @@ CFLAGS= -Wall -Wextra -pedantic -std=c99 -D_XOPEN_SOURCE=600 -O0 -g
 LDFLAGS=
 LDLIBS=
 
-SRC= src/html_operations.c src/epifortune.c 
+SRC= src/html_operations.c src/quotation.c src/epifortune.c
 OBJ=${SRC:.c=.o}
 OUT= epifortune
 

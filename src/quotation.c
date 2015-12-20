@@ -1,4 +1,8 @@
+# include <stdlib.h>
+# include <stdio.h>
+# include <string.h>
 # include "quotation.h"
+
 
 struct quotation* init_quotation(char *author, char *context, char *quote,
                                 long number)
@@ -54,7 +58,7 @@ struct quotation* get_unformatted(char *blockquote)
   for( ; i < len && blockquote[i] == ' '; i++);
   size_t index_context = 0;
   size_t size_context = 0;
-  if(blockquote[i] == '('); /* There is a context */
+  if(blockquote[i] == '(') /* There is a context */
   {
     if(!strncmp("(<em>", blockquote + i, 5))
       i += 5;
@@ -260,4 +264,22 @@ char* reformat(char *html)
     if((new[i + 1] == '\n') && (i + 2 < len))
       new[i + 2] = '\0';
   return new;
+}
+
+void print_quotation(struct quotation *quotation)
+{
+  printf("%s\n", quotation->author);
+  for(size_t i = 0; i < strlen(quotation->author); i++)
+    putchar('=');
+  putchar('\n');
+  if(quotation->context)
+  {
+    printf("%s\n", quotation->context);
+    for(size_t i = 0; i < strlen(quotation->context); i++)
+      putchar('-');
+    putchar('\n');
+  }
+  putchar('\n');
+  printf("%s\n", quotation->quote);
+  printf("\n#%lu\n", quotation->number);
 }

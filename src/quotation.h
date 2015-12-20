@@ -1,8 +1,6 @@
 # ifndef _QUOTATION_H_
 # define _QUOTATION_H_
 
-# include <stdlib.h>
-
 struct quotation
 {
   char *author;
@@ -18,8 +16,10 @@ void free_quotation(struct quotation *quotation);
 
 struct quotation* get_unformatted(char *blockquote);
 
+char* reformat(char *html);
+
 char* reformat_soft(char *old);
 
-char* reformat(char *html);
+void print_quotation(struct quotation *quotation);
 
 # endif
