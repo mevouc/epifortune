@@ -10,6 +10,7 @@ Requirements
 ------------
 - Unix-based OS
 - GNU Make
+- Clang compiler
 - C Standard Library
 - Wget
 
