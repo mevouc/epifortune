@@ -5,7 +5,7 @@
 
 
 struct quotation* init_quotation(char *author, char *context, char *quote,
-                                long number)
+                                unsigned long number)
 {
   struct quotation *quotation = calloc(1, sizeof(struct quotation));
   quotation->author = author;
@@ -22,6 +22,7 @@ void free_quotation(struct quotation *quotation)
     free(quotation->author);
     free(quotation->context);
     free(quotation->quote);
+    free(quotation);
   }
 }
 
@@ -120,166 +121,84 @@ struct quotation* get_unformatted(char *blockquote)
   char *num = calloc(size_num + 1, sizeof(char));
   for(size_t j = 0; j < size_num; j++)
     num[j] = blockquote[index_num++];
-  long number = strtol(num, NULL, 10);
+  unsigned long number = strtoul(num, NULL, 10);
+  free(num);
   return init_quotation(author, context, quote, number);
 }
 
-char* reformat_soft(char *old)
-{
-  size_t len = strlen(old);
-  char *new = calloc(2 * len, sizeof(char));
-  size_t i = 0;
-  size_t j = 0;
-  int stop = 0;
-  while(i < len && !stop)
-  {
-    if(old[i] == '&')
-    {
-      char *s = calloc(256, sizeof(char));
-      sscanf(old + i, "&%s;", s);
-      if(s[0] == '#')
-      {
-        int c;
-        sscanf(s, "#%d", &c);
-        new[j++] = c;
-      }
-      else if(!strncmp(s, "lt", 2))
-        new[j++] = '<';
-      else if(!strncmp(s, "gt", 2))
-        new[j++] = '>';
-      else if(!strncmp(s, "quot", 4))
-        new[j++] = '"';
-      for( ; old[i] != ';'; i++);
-      free(s);
-    }
-    else if(old[i] == '\0')
-    {
-      new[j] = '\0';
-      i--;
-      stop = 1;
-    }
-    else
-      new[j++] = old[i];
-    i++;
-  }
-  free(old);
-  return new;
-}
-
-char* reformat(char *html)
+char* reformat_str(char *html)
 {
   size_t len = strlen(html);
-  char *new = calloc(2 * len, sizeof(char));
+  char *str = calloc(len + 1, sizeof(char));
   size_t i = 0;
   size_t j = 0;
-  for( ; i < len && html[i] != '\n'; i++);
-  int stop = 0;
-  while((i < len) && !stop)
+  while(i < len)
   {
-    if(html[i] == '\n')
+    if(html[i] == '<')
     {
-      for( ; html[i + 1] == ' '; i++);
-    }
-    else if(html[i] == ' ')
-    {
-      for( ; html[i + 1] == ' '; i++);
-      new[j++] = ' ';
-    }
-    else if(html[i] == '<')
-    {
-      char *s = calloc(256, sizeof(char));
-      if(!strncmp(html + i, "<strong>", 8))
+      if(!strncmp("<br />", html + i, 6))
       {
-        i += 8;
-        size_t k = 0;
-        while(html[i] != '<')
-        {
-          k++;
-          new[j++] = html[i++];
-        }
-        for( ; html[i] != '\n'; i++);
-        new[j++] = '\n';
-        for(size_t m = 0; m < k; m++)
-          new[j + m] = '=';
-        j += k;
-        new[j++] = '\n';
-        i--;
-      }
-      else if(!strncmp(html + i, "</small>", 8))
-        i += 7;
-      else if(!strncmp(html + i, "</p>", 4))
-      {
-        i += 3;
-        new[j++] = '\n';
-      }
-      else if(!strncmp(html + i, "<p>", 3))
-        i += 2;
-      else if(!strncmp(html + i, "<br />", 6))
-      {
+        str[j] = '\n';
         i += 5;
-        new[j++] = '\n';
+      }
+    }
+    else if(html[i] == '&')
+    {
+      i++;
+      size_t index_spec = i;
+      for( ; i < len && html[i] != ';'; i++);
+      size_t size_spec = i - index_spec;
+      char *spec = calloc(size_spec + 1, sizeof(char));
+      for(size_t k = 0; k < size_spec; k++)
+        spec[k] = html[index_spec++];
+      if(spec[0] == '#')
+      {
+        long num = strtol(spec + 1, NULL, 10);
+        str[j] = num;
       }
       else
-        new[j++] = html[i];
-      free(s);
-    }
-    else if(html[i] == '(')
-    {
-      char *s = calloc(256, sizeof(char));
-      if(!strncmp(html + i, "(<em>", 5))
       {
-        i += 5;
-        size_t k = 0;
-        while(html[i] != '<')
-        {
-          k++;
-          new[j++] = html[i++];
-        }
-        for( ; html[i] != ')'; i++);
-        i++;
-        new[j++] = '\n';
-        for(size_t m = 0; m < k; m++)
-          new[j + m] = '-';
-        j += k;
-        new[j++] = '\n';
-        i--;
+        if(!strncmp("lt", spec, 2))
+          str[j] = '<';
+        else if(!strncmp("gt", spec, 2))
+          str[j] = '>';
+        else if(!strncmp("quot", spec, 4))
+          str[j] = '"';
       }
-      else
-        new[j++] = html[i];
-      free(s);
-    }
-    else if(html[i] == '\0')
-    {
-      new[j] = '\0';
-      i--;
-      stop = 1;
+      free(spec);
     }
     else
-      new[j++] = html[i];
+      str[j] = html[i];
     i++;
+    j++;
   }
   free(html);
-  for( ; i > 0 && (new[i] == '\0' || new[i] == '\n'); i--);
-  if((i > 0) && (i + 1 < len))
-    if((new[i + 1] == '\n') && (i + 2 < len))
-      new[i + 2] = '\0';
-  return new;
+  return str;
+}
+
+struct quotation* reformat(struct quotation *quotation)
+{
+  quotation->author = reformat_str(quotation->author);
+  if(quotation->context)
+    quotation->context = reformat_str(quotation->context);
+  quotation->quote = reformat_str(quotation->quote);
+  return quotation;
 }
 
 void print_quotation(struct quotation *quotation)
 {
-  printf("%s\n", quotation->author);
+  puts(quotation->author);
   for(size_t i = 0; i < strlen(quotation->author); i++)
     putchar('=');
   putchar('\n');
   if(quotation->context)
   {
-    printf("%s\n", quotation->context);
+    puts(quotation->context);
     for(size_t i = 0; i < strlen(quotation->context); i++)
       putchar('-');
     putchar('\n');
   }
   putchar('\n');
-  printf("%s\n", quotation->quote);
+  puts(quotation->quote);
   printf("\n#%lu\n", quotation->number);
 }

@@ -6,19 +6,17 @@ struct quotation
   char *author;
   char *context;
   char *quote;
-  long number;
+  unsigned long number;
 };
 
 struct quotation* init_quotation(char *author, char *context, char *quote,
-                                long number);
+                                unsigned long number);
 
 void free_quotation(struct quotation *quotation);
 
 struct quotation* get_unformatted(char *blockquote);
 
-char* reformat(char *html);
-
-char* reformat_soft(char *old);
+struct quotation* reformat(struct quotation *quotation);
 
 void print_quotation(struct quotation *quotation);
 

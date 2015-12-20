@@ -6,17 +6,17 @@ int main(int argc, char **argv)
 {
   if(argc > 1)
   {
-    char *str = /*reformat_soft*/(/*reformat*/(get_quote(strtoul(argv[1], NULL,10))));
+    char *str = get_quote(strtoul(argv[1], NULL,10));
     struct quotation *q = get_unformatted(str);
-    print_quotation(q);
+    print_quotation(reformat(q));
     free(str);
     free_quotation(q);
   }
   else
   {
-    char *str = /*reformat_soft*/(/*reformat*/(get_random_quote()));
+    char *str = get_random_quote();
     struct quotation *q = get_unformatted(str);
-    print_quotation(q);
+    print_quotation(reformat(q));
     free(str);
     free_quotation(q);
   }
