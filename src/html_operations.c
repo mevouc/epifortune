@@ -28,56 +28,31 @@ char* get_blockquote(FILE *file)
 {
   fpos_t *begin = malloc(sizeof(fpos_t));
   fgetpos(file, begin);
-  int end = 0;
   char c = EOF;
-  char *blockquote = calloc(16, sizeof(char));
+  int end = 0;
+  char *tag_end_block = calloc(6, sizeof(char));
   size_t count = 0;
+  /* Count number of char of the string to return */
   while(!end && (c = fgetc(file)) != EOF)
   {
-    count++;
     if(c == '<')
     {
-      fgets(blockquote, 12, file);
-      if(!strncmp("/blockquote", blockquote, 12))
+      fgets(tag_end_block, 6, file);
+      if(!strncmp("/a> −", tag_end_block, 5))
       {
-        //count -= 12;
         end = 1;
       }
-      else
-        count += 10;
+      count += 5;
     }
+    count++;
   }
-  char *quote = calloc(count * 2, sizeof(char));
+  char *blockquote = calloc(count + 1, sizeof(char));
   fsetpos(file, begin);
   free(begin);
-  int stop = 0;
-  size_t endblockquote = 0;
-  for(size_t i = 0; i < count + 2 && !stop; i++)
-  {
-    char c = fgetc(file);
-    if(c == '<')
-      endblockquote++;
-    else if(endblockquote == 1 && c == '/')
-      endblockquote++;
-    else if(endblockquote == 2 && c == 'b')
-      endblockquote++;
-    else if(endblockquote == 3 && c == 'l')
-      stop = 1;
-    else if(c == EOF)
-      stop = 1;
-    else
-      endblockquote = 0;
-    quote[i] = c;
-  }
-  if(endblockquote)
-  {
-    size_t i = 0;
-    for(i = strlen(quote); i > 0 && quote[i] != '\n'; i--);
-    if(quote[i] == '\n')
-      quote[i] = '\0';
-  }
-  free(blockquote);
-  return quote;
+  for(size_t i = 0; i < count; i++)
+    blockquote[i] = fgetc(file);
+  free(tag_end_block);
+  return blockquote;
 }
 
 char* get_random_quote(void)
@@ -136,152 +111,6 @@ char* get_quote(unsigned long nb)
   free(number);
   free(rmf);
   return blockquote;
-}
-
-char* reformat_soft(char *old)
-{
-  size_t len = strlen(old);
-  char *new = calloc(2 * len, sizeof(char));
-  size_t i = 0;
-  size_t j = 0;
-  int stop = 0;
-  while(i < len && !stop)
-  {
-    if(old[i] == '&')
-    {
-      char *s = calloc(256, sizeof(char));
-      sscanf(old + i, "&%s;", s);
-      if(s[0] == '#')
-      {
-        int c;
-        sscanf(s, "#%d", &c);
-        new[j++] = c;
-      }
-      else if(!strncmp(s, "lt", 2))
-        new[j++] = '<';
-      else if(!strncmp(s, "gt", 2))
-        new[j++] = '>';
-      else if(!strncmp(s, "quot", 4))
-        new[j++] = '"';
-      for( ; old[i] != ';'; i++);
-      free(s);
-    }
-    else if(old[i] == '\0')
-    {
-      new[j] = '\0';
-      i--;
-      stop = 1;
-    }
-    else
-      new[j++] = old[i];
-
-    i++;
-  }
-
-  free(old);
-  return new;
-}
-
-char* reformat(char *html)
-{
-  size_t len = strlen(html);
-  char *new = calloc(2 * len, sizeof(char));
-  size_t i = 0;
-  size_t j = 0;
-  for( ; i < len && html[i] != '\n'; i++);
-  int stop = 0;
-  while((i < len) && !stop)
-  {
-    if(html[i] == '\n')
-    {
-      for( ; html[i + 1] == ' '; i++);
-    }
-    else if(html[i] == ' ')
-    {
-      for( ; html[i + 1] == ' '; i++);
-      new[j++] = ' ';
-    }
-    else if(html[i] == '<')
-    {
-      char *s = calloc(256, sizeof(char));
-      if(!strncmp(html + i, "<strong>", 8))
-      {
-        i += 8;
-        size_t k = 0;
-        while(html[i] != '<')
-        {
-          k++;
-          new[j++] = html[i++];
-        }
-        for( ; html[i] != '\n'; i++);
-        new[j++] = '\n';
-        for(size_t m = 0; m < k; m++)
-          new[j + m] = '=';
-        j += k;
-        new[j++] = '\n';
-        i--;
-      }
-      else if(!strncmp(html + i, "</small>", 8))
-        i += 7;
-      else if(!strncmp(html + i, "</p>", 4))
-      {
-        i += 3;
-        new[j++] = '\n';
-      }
-      else if(!strncmp(html + i, "<p>", 3))
-        i += 2;
-      else if(!strncmp(html + i, "<br />", 6))
-      {
-        i += 5;
-        new[j++] = '\n';
-      }
-      else
-        new[j++] = html[i];
-      free(s);
-    }
-    else if(html[i] == '(')
-    {
-      char *s = calloc(256, sizeof(char));
-      if(!strncmp(html + i, "(<em>", 5))
-      {
-        i += 5;
-        size_t k = 0;
-        while(html[i] != '<')
-        {
-          k++;
-          new[j++] = html[i++];
-        }
-        for( ; html[i] != ')'; i++);
-        i++;
-        new[j++] = '\n';
-        for(size_t m = 0; m < k; m++)
-          new[j + m] = '-';
-        j += k;
-        new[j++] = '\n';
-        i--;
-      }
-      else
-        new[j++] = html[i];
-      free(s);
-    }
-    else if(html[i] == '\0')
-    {
-      new[j] = '\0';
-      i--;
-      stop = 1;
-    }
-    else
-      new[j++] = html[i];
-
-    i++;
-  }
-
-  free(html);
-  for( ; i > 0 && (new[i] == '\0' || new[i] == '\n'); i--);
-  if((i > 0) && (i + 1 < len))
-    if((new[i + 1] == '\n') && (i + 2 < len))
-      new[i + 2] = '\0';
-  return new;
 }
 
 void print_file(FILE *file)
