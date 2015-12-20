@@ -241,18 +241,21 @@ size_t maxlinelen(char *str)
       max = count > max ? count : max;
       count = 0;
     }
+    if(str[i] == '\303')
+      count--;
     count++;
     i++;
   }
   return max ? max : len;
 }
 
-void print_quotation(struct quotation *quotation, int a, int c, int q, int n)
+void print_quotation(struct quotation *quotation, int a, int c, int q, int n,
+                    unsigned long col)
 {
   if(a)
   {
     puts(quotation->author);
-    for(size_t i = 0; i < maxlinelen(quotation->author); i++)
+    for(size_t i = 0; i < maxlinelen(quotation->author) && i < col; i++)
       putchar('=');
     putchar('\n');
   }
@@ -261,7 +264,7 @@ void print_quotation(struct quotation *quotation, int a, int c, int q, int n)
     if(quotation->context)
     {
       puts(quotation->context);
-      for(size_t i = 0; i < maxlinelen(quotation->context); i++)
+      for(size_t i = 0; i < maxlinelen(quotation->context) && i < col; i++)
         putchar('-');
       putchar('\n');
     }

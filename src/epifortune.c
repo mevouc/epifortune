@@ -86,7 +86,7 @@ void run_on_quote(char *blockquote, int a, int c, int q, int n,
                   unsigned long col)
 {
   struct quotation *quotation = get_unformatted(blockquote);
-  print_quotation(reformat(quotation, col), a, c, q, n);
+  print_quotation(reformat(quotation, col), a, c, q, n, col);
   free(blockquote);
   free_quotation(quotation);
   system("rm -f [0-9]*");
