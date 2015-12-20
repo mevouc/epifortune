@@ -1,4 +1,5 @@
 # include "html_operations.h"
+# include <stdlib.h>
 # include <err.h>
 # include <string.h>
 
@@ -60,14 +61,14 @@ char* get_random_quote(void)
   int ret = system("wget -q http://epiquote.fr/random -O ./0");
   if(ret != 0)
   {
-    errx(1, "Fail to get a random quote.");
+    errx(1, "Failed to get a random quote.");
     return NULL;
   }
   FILE *file = fopen("0", "r");
   char *blockquote = NULL;
   if(!file)
   {
-    errx(1, "Fail to get a random quote.");
+    errx(1, "Failed to get a random quote.");
     return NULL;
   }
   else
@@ -96,7 +97,7 @@ char* get_quote(unsigned long nb)
   char *blockquote = NULL;
   if(!file)
   {
-    errx(1, "Fail to read the quote #%lu.", nb);
+    errx(1, "Failed to read the quote #%lu.", nb);
     free(number);
     return NULL;
   }

@@ -2,7 +2,6 @@
 # define _HTML_OPERATIONS_H_
 
 # include <stdio.h>
-# include <stdlib.h>
 
 FILE* find_first_blockquote(FILE* file);
 

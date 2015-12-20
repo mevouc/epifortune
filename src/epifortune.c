@@ -6,14 +6,14 @@
 int main(int argc, char **argv)
 {
   int help = 0;
+  int shit = 0;
   unsigned long number = 0;
   int a = 0;
   int c = 0;
   int q = 0;
   int n = 0;
-  int i = 1;
-  int shit = 0;
   unsigned long col = 0;
+  int i = 1;
   while(i < argc)
   {
     if(!strncmp("-h", argv[i], 2) || !strncmp("--help", argv[i], 6))
@@ -95,6 +95,7 @@ void print_help(void)
 {
   printf("epifortune: Syntax: epifortune [-h] [-n number] [-c acqn]\n");
   printf("\n");
+  printf("Available options:\n");
   printf("  -h | --help           Prompt this help.\n");
   printf("  -n | --number number  Print the number-th quote. If this option ");
   printf("is not set,\n");
@@ -109,7 +110,7 @@ void print_help(void)
   printf("columns,\n");
   printf("                        default is 80 columns. Low values may cause");
   printf(" odd\n");
-  printf("                        display, use them responsibly.\n");
+  printf("                        display, use them moderatly.\n");
   printf("\n");
   printf("Examples:\n");
   printf("  epifortune\n");
