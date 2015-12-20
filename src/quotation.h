@@ -16,6 +16,10 @@ void free_quotation(struct quotation *quotation);
 
 struct quotation* get_unformatted(char *blockquote);
 
+char* reformat_str(char *html);
+
+char* wrap80columns(char *str);
+
 struct quotation* reformat(struct quotation *quotation);
 
 void print_quotation(struct quotation *quotation, int a, int c, int q, int n);

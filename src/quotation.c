@@ -176,6 +176,11 @@ char* reformat_str(char *html)
   return str;
 }
 
+char* wrap80col(char *str)
+{
+  return NULL;
+}
+
 struct quotation* reformat(struct quotation *quotation)
 {
   quotation->author = reformat_str(quotation->author);

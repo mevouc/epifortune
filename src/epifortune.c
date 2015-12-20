@@ -12,6 +12,7 @@ int main(int argc, char **argv)
   int q = 0;
   int n = 0;
   int i = 1;
+  int shit = 0;
   while(i < argc)
   {
     if(!strncmp("-h", argv[i], 2) || !strncmp("--help", argv[i], 6))
@@ -48,9 +49,16 @@ int main(int argc, char **argv)
         }
       }
     }
+    else
+      shit = i;
     i++;
   }
-  if(help)
+  if(shit)
+  {
+    printf("Unknown option: \"%s\".\n", argv[shit]);
+    print_help();
+  }
+  else if(help)
     print_help();
   else
   {
