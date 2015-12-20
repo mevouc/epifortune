@@ -1,8 +1,8 @@
 # include <stdlib.h>
 # include <stdio.h>
 # include <string.h>
+# include <err.h>
 # include "quotation.h"
-
 
 struct quotation* init_quotation(char *author, char *context, char *quote,
                                 unsigned long number)
@@ -164,6 +164,10 @@ char* reformat_str(char *html)
           str[j] = '>';
         else if(!strncmp("quot", spec, 4))
           str[j] = '"';
+        else if(!strncmp("amp", spec, 3))
+          str[j] = '&';
+        else
+          errx(1, "Unknown special character in html file.\n");
       }
       free(spec);
     }
@@ -182,36 +186,45 @@ char* reformat_str(char *html)
   return str;
 }
 
-char* wrap80col(char *str)
+char* wrapcol(char *str, unsigned long col)
 {
   size_t len = strlen(str);
   size_t i = 0;
   size_t last_space = 0;
+  size_t last_return = 0;
   size_t count = 0;
   while(i < len)
   {
     count++;
     if(str[i] == '\n')
+    {
+      last_return = i;
       count = 0;
+    }
     if(str[i] == ' ')
       last_space = i;
-    if(count == 80)
+    if(count == col)
     {
-      str[last_space] = '\n';
-      i = last_space;
-      count = 0;
+      if(last_space > last_return)
+      {
+        str[last_space] = '\n';
+        last_return = i = last_space;
+        count = 0;
+      }
+      else
+        count /= 2;
     }
     i++;
   }
   return str;
 }
 
-struct quotation* reformat(struct quotation *quotation)
+struct quotation* reformat(struct quotation *quotation, unsigned long col)
 {
-  quotation->author = wrap80col(reformat_str(quotation->author));
+  quotation->author = wrapcol(reformat_str(quotation->author), col);
   if(quotation->context)
-    quotation->context = wrap80col(reformat_str(quotation->context));
-  quotation->quote = wrap80col(reformat_str(quotation->quote));
+    quotation->context = wrapcol(reformat_str(quotation->context), col);
+  quotation->quote = wrapcol(reformat_str(quotation->quote), col);
   return quotation;
 }
 

@@ -13,6 +13,7 @@ int main(int argc, char **argv)
   int n = 0;
   int i = 1;
   int shit = 0;
+  unsigned long col = 0;
   while(i < argc)
   {
     if(!strncmp("-h", argv[i], 2) || !strncmp("--help", argv[i], 6))
@@ -21,6 +22,11 @@ int main(int argc, char **argv)
     {
       if(i + 1 < argc)
         number = strtoul(argv[++i], NULL, 10);
+    }
+    else if(!strncmp("-w", argv[i], 2) || !strncmp("--wrap", argv[i], 6))
+    {
+      if(i + 1 < argc)
+        col = strtoul(argv[++i], NULL, 10);
     }
     else if(!strncmp("-c", argv[i], 2) || !strncmp("--conceal", argv[i], 9))
     {
@@ -62,22 +68,24 @@ int main(int argc, char **argv)
     print_help();
   else
   {
+    col = col ? col : 80;
     if(number)
     {
-      run_on_quote(get_quote(number), !a, !c, !q, !n);
+      run_on_quote(get_quote(number), !a, !c, !q, !n, col);
     }
     else
     {
-      run_on_quote(get_random_quote(), !a, !c, !q, !n);
+      run_on_quote(get_random_quote(), !a, !c, !q, !n, col);
     }
   }
   return 0;
 }
 
-void run_on_quote(char *blockquote, int a, int c, int q, int n)
+void run_on_quote(char *blockquote, int a, int c, int q, int n,
+                  unsigned long col)
 {
   struct quotation *quotation = get_unformatted(blockquote);
-  print_quotation(reformat(quotation), a, c, q, n);
+  print_quotation(reformat(quotation, col), a, c, q, n);
   free(blockquote);
   free_quotation(quotation);
   system("rm -f [0-9]*");
@@ -97,6 +105,11 @@ void print_help(void)
   printf("                          * c - Context\n");
   printf("                          * q - Quote\n");
   printf("                          * n - Number\n");
+  printf("  -w | --wrap column    Word-wraps the message at about column ");
+  printf("columns,\n");
+  printf("                        default is 80 columns. Low values may cause");
+  printf(" odd\n");
+  printf("                        display, use them responsibly.\n");
   printf("\n");
   printf("Examples:\n");
   printf("  epifortune\n");

@@ -18,9 +18,9 @@ struct quotation* get_unformatted(char *blockquote);
 
 char* reformat_str(char *html);
 
-char* wrap80columns(char *str);
+char* wrapcol(char *str, unsigned long col);
 
-struct quotation* reformat(struct quotation *quotation);
+struct quotation* reformat(struct quotation *quotation, unsigned long col);
 
 void print_quotation(struct quotation *quotation, int a, int c, int q, int n);
 
