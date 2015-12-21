@@ -11,8 +11,9 @@ Requirements
 - Unix-based OS
 - GNU Make
 - Clang compiler
-- C Standard Library
+- C99 Standard Library
 - Wget
+- An Internet connection
 
 Running epifortune
 ------------------
