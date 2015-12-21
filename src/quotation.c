@@ -87,18 +87,23 @@ struct quotation* get_unformatted(char *blockquote)
   for( ; i < len && blockquote[i] != '\n'; i++);
   i++;
   /* Goto begin of quote */
-  for( ; i < len && blockquote[i] == ' '; i++);
+  for( ; i < len && (blockquote[i] == ' ' || blockquote[i] == '\n'); i++);
   if(!strncmp("<p>", blockquote + i, 3))
     i += 3;
   size_t index_quote = i;
+  size_t index_endquote = 0;
   size_t size_quote = 0;
   while(!size_quote)
   {
     for( ; i < len && blockquote[i] != '<'; i++);
     if(!strncmp("</p>", blockquote + i, 4))
     {
-      size_quote = i - index_quote;
+      index_endquote = i;
       i += 3;
+    }
+    else if(!strncmp("</blockquote>", blockquote + i, 13))
+    {
+      size_quote = index_endquote - index_quote;
     }
     i++;
   }
@@ -106,7 +111,7 @@ struct quotation* get_unformatted(char *blockquote)
   for(size_t j = 0; j < size_quote; j++)
     quote[j] = blockquote[index_quote++];
   /* Until begin of number line, 4 lines below */
-  for(size_t j = 0; j < 4; j++)
+  for(size_t j = 0; j < 3; j++)
   {
     for( ; i < len && blockquote[i] != '\n'; i++);
     i++;
@@ -140,6 +145,14 @@ char* reformat_str(char *html)
       {
         str[j] = '\n';
         i += 5;
+      }
+      else if(!strncmp("</p>", html + i, 4))
+      {
+        str[j] = '\n';
+        i++;
+        for( ; i < len && html[i] != '<'; i++);
+        if(!strncmp("<p>", html + i, 3))
+          i += 2;
       }
     }
     else if(html[i] == '&')
