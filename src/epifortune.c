@@ -109,8 +109,8 @@ void print_help(void)
   printf("                          * n - Number\n");
   printf("  -w | --wrap column    Word-wraps the message at about column ");
   printf("columns,\n");
-  printf("                        default is 80 columns. Low values may cause");
-  printf(" odd\n");
+  printf("                        default is 80 columns. Low values may ");
+  printf(" cause odd\n");
   printf("                        display, use them moderatly.\n");
   printf("\n");
   printf("Examples:\n");

@@ -19,7 +19,7 @@ Running epifortune
 ------------------
 Simply invoke the `epifortune` command with or without options.
 
-Running epifortune without options will prompt a random quote from 
+Running epifortune without options will prompt a random quote from
 [Epiquote](http://epiquote.fr), with its author, its context and its number,
 word-wrapped at about 80 columns.
 
