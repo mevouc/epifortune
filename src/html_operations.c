@@ -56,14 +56,38 @@ char* get_blockquote(FILE *file)
   return blockquote;
 }
 
-char* get_random_quote(void)
+char* dl_quote(unsigned long nb)
 {
-  int ret = system("wget -q http://epiquote.fr/random -O ./0");
-  if(ret != 0)
+  if(nb == 0)
   {
-    errx(1, "Failed to get a random quote.");
+    int ret = system("wget -q http://epiquote.fr/random -O ./0");
+    if(ret != 0)
+    {
+      errx(1, "Failed to get a random quote.");
+    }
     return NULL;
   }
+  else
+  {
+    if(nb > 999999)
+    {
+      errx(1, "There are clearly not so much quotes.");
+      return NULL;
+    }
+    char *wget = calloc(32, sizeof(char));
+    wget = strcpy(wget, "wget -q http://epiquote.fr/");
+    char *number = calloc(24, sizeof(char));
+    sprintf(number, "%lu", nb);
+    wget = strcat(wget, number);
+    system(wget);
+    free(wget);
+    return number;
+  }
+}
+
+char* get_random_quote(void)
+{
+  dl_quote(0);
   FILE *file = fopen("0", "r");
   char *blockquote = NULL;
   if(!file)
@@ -81,24 +105,13 @@ char* get_random_quote(void)
 
 char* get_quote(unsigned long nb)
 {
-  if(nb > 999999)
-  {
-    errx(1, "There are clearly not so much quotes.");
-    return NULL;
-  }
-  char *wget = calloc(32, sizeof(char));
-  wget = strcpy(wget, "wget -q http://epiquote.fr/");
-  char *number = calloc(24, sizeof(char));
-  sprintf(number, "%lu", nb);
-  wget = strcat(wget, number);
-  system(wget);
-  free(wget);
-  FILE* file = fopen(number, "r");
+  char *number = dl_quote(nb);
+  FILE *file = fopen(number, "r");
+  free(number);
   char *blockquote = NULL;
   if(!file)
   {
     errx(1, "Failed to read the quote #%lu.", nb);
-    free(number);
     return NULL;
   }
   else
@@ -106,11 +119,6 @@ char* get_quote(unsigned long nb)
     blockquote = get_blockquote(find_first_blockquote(file));
     fclose(file);
   }
-  char *rmf = malloc(12 * sizeof(char));
-  rmf = strcpy(rmf, "rm -f ");
-  rmf = strcat(rmf, number);
-  free(number);
-  free(rmf);
   return blockquote;
 }
 

@@ -83,7 +83,7 @@ int main(int argc, char **argv)
 }
 
 void run_on_quote(char *blockquote, int a, int c, int q, int n,
-                  unsigned long col)
+    unsigned long col)
 {
   struct quotation *quotation = get_unformatted(blockquote);
   print_quotation(reformat(quotation, col), a, c, q, n, col);
