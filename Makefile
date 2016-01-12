@@ -1,6 +1,6 @@
 # Makefile for epifortune
 
-CC=clang
+CC=gcc
 
 CPPFLAGS=
 CFLAGS= -Wall -Wextra -pedantic -std=c99 -D_XOPEN_SOURCE=600 -O3

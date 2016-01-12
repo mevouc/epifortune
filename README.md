@@ -10,7 +10,7 @@ Requirements
 ------------
 - Unix-based OS
 - GNU Make
-- Clang compiler
+- Gcc compiler
 - C99 Standard Library
 - Wget
 - An Internet connection
