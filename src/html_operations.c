@@ -56,8 +56,18 @@ char* get_blockquote(FILE *file)
   return blockquote;
 }
 
-char* dl_quote(unsigned long nb)
+char* dl_quote(long nb)
 {
+  if(nb == -1)
+  {
+    int ret = system("wget -q http://epiquote.fr/last -O ./-1");
+    if(ret != 0)
+    {
+      errx(1, "Failed to get a random quote.");
+    }
+    return NULL;
+
+  }
   if(nb == 0)
   {
     int ret = system("wget -q http://epiquote.fr/random -O ./0");
@@ -88,7 +98,7 @@ char* dl_quote(unsigned long nb)
 char* get_random_quote(void)
 {
   dl_quote(0);
-  FILE *file = fopen("0", "r");
+  FILE *file = fopen("./0", "r");
   char *blockquote = NULL;
   if(!file)
   {
@@ -103,7 +113,25 @@ char* get_random_quote(void)
   return blockquote;
 }
 
-char* get_quote(unsigned long nb)
+char* get_last_quote(void)
+{
+  dl_quote(-1);
+  FILE *file = fopen("./-1", "r");
+  char *blockquote = NULL;
+  if(!file)
+  {
+    errx(1, "Failed to get the last quote.");
+    return NULL;
+  }
+  else
+  {
+    blockquote = get_blockquote(find_first_blockquote(file));
+    fclose(file);
+  }
+  return blockquote;
+}
+
+char* get_quote(long nb)
 {
   char *number = dl_quote(nb);
   FILE *file = fopen(number, "r");

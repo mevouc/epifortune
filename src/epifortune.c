@@ -15,10 +15,13 @@ int main(int argc, char **argv)
   int n = 0;
   unsigned long col = 0;
   int i = 1;
+  int last = 0;
   while(i < argc)
   {
     if(!strncmp("-h", argv[i], 2) || !strncmp("--help", argv[i], 6))
       help = 1;
+    else if(!strncmp("-l", argv[i], 2) || !strncmp("--last", argv[i], 6))
+      last = 1;
     else if(!strncmp("-n", argv[i], 2) || !strncmp("--number", argv[i], 8))
     {
       if(i + 1 < argc)
@@ -65,19 +68,17 @@ int main(int argc, char **argv)
     printf("epifortune: Invalid option '%s'\n", argv[shit]);
     print_help();
   }
-  else if(help)
+  else if(help || (last && number))
     print_help();
   else
   {
     col = col ? col : 80;
     if(number)
-    {
       run_on_quote(get_quote(number), !a, !c, !q, !n, col);
-    }
+    else if(last)
+      run_on_quote(get_last_quote(), !a, !c, !q, !n, col);
     else
-    {
       run_on_quote(get_random_quote(), !a, !c, !q, !n, col);
-    }
   }
   return 0;
 }
@@ -90,34 +91,39 @@ void run_on_quote(char *blockquote, int a, int c, int q, int n,
   free(blockquote);
   free_quotation(quotation);
   system("rm -f [0-9]*");
+  system("rm -f ./-[0-9]*");
 }
 
 void print_help(void)
 {
-  printf("epifortune: Syntax: epifortune [-h] [-n number] [-c acqn]\n");
+  printf("Usage: epifortune [global options]\n");
   printf("\n");
-  printf("Available options:\n");
-  printf("  -h | --help           Prompt this help.\n");
-  printf("  -n | --number number  Print the number-th quote. If this option ");
-  printf("is not set,\n");
-  printf("                        a random quote will be printed.\n");
-  printf("  -c | --conceal acqn   Hide one or more infos about the ");
+  printf("Global options:\n");
+  printf("  -h, --help           Prompt this help.\n");
+  printf("  -n, --number number  Print the number-th quote. If this option is");
+  printf(" not set, a\n");
+  printf("                       random quote will be printed.\n");
+  printf("  -l, --last           Print the last quote. You can't set this ");
+  printf(" option and\n");
+  printf("                       the --number one at the same time.");
+  printf("  -c, --conceal acqn   Hide one or more infos about the ");
   printf("quotation:\n");
-  printf("                          * a - Author\n");
-  printf("                          * c - Context\n");
-  printf("                          * q - Quote\n");
-  printf("                          * n - Number\n");
-  printf("  -w | --wrap column    Word-wraps the message at about column ");
-  printf("columns,\n");
-  printf("                        default is 80 columns. Low values may ");
-  printf(" cause odd\n");
-  printf("                        display, use them moderatly.\n");
+  printf("                         * a - Author\n");
+  printf("                         * c - Context\n");
+  printf("                         * q - Quote\n");
+  printf("                         * n - Number\n");
+  printf("  -w, --wrap column    Word-wraps the message at about column ");
+  printf("columns, default\n");
+  printf("                       is 80 columns. Low values may cause odd ");
+  printf("display, use\n");
+  printf("                       them moderatly.\n");
   printf("\n");
   printf("Examples:\n");
   printf("  epifortune\n");
   printf("  epifortune --help\n");
   printf("  epifortune -n 42 -c n\n");
   printf("  epifortune -c aqn\n");
+  printf("  epifortune --last");
   printf("\n");
   printf("Provided by Meven 'mevouc' Courouble (http://vouc.me).\n");
   printf("Code (https://github.com/mevouc/epifortune) under Beerware ");
