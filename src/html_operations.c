@@ -20,7 +20,11 @@ FILE* find_first_blockquote(FILE *file)
   }
   for(; c != EOF && c != '\n'; c = fgetc(file));
   if(c == EOF)
-    return NULL;
+  {
+    system("rm -f [0-9]*");
+    system("rm -f ./-[0-9]*");
+    errx(1, "Unable to parse the HTML file. Check your Internet connection.");
+  }
   free(blockquote);
   return file;
 }
@@ -139,7 +143,7 @@ char* get_quote(long nb)
   char *blockquote = NULL;
   if(!file)
   {
-    errx(1, "Failed to read the quote #%lu.", nb);
+    errx(1, "Failed to read the quote #%lu, this quote may not exist.", nb);
     return NULL;
   }
   else

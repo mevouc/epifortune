@@ -180,7 +180,7 @@ char* reformat_str(char *html)
         else if(!strncmp("amp", spec, 3))
           str[j] = '&';
         else
-          errx(1, "Unknown special character in html file.\n");
+          errx(1, "Unknown special character in HTML file.\n");
       }
       free(spec);
     }
