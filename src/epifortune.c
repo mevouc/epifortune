@@ -105,7 +105,7 @@ void print_help(void)
   printf("                       random quote will be printed.\n");
   printf("  -l, --last           Print the last quote. You can't set this ");
   printf(" option and\n");
-  printf("                       the --number one at the same time.");
+  printf("                       the --number one at the same time.\n");
   printf("  -c, --conceal acqn   Hide one or more infos about the ");
   printf("quotation:\n");
   printf("                         * a - Author\n");
