@@ -24,7 +24,7 @@ int main(int argc, char **argv)
       last = 1;
     else if(!strncmp("-n", argv[i], 2) || !strncmp("--number", argv[i], 8))
     {
-      if(i + 1 < argc)
+      if(i + 1 < argc && strncmp("-", argv[i + 1], 1))
         number = strtoul(argv[++i], NULL, 10);
     }
     else if(!strncmp("-w", argv[i], 2) || !strncmp("--wrap", argv[i], 6))
@@ -73,25 +73,37 @@ int main(int argc, char **argv)
   else
   {
     col = col ? col : 80;
+    char *blockquote = NULL;
+    char *rm = calloc(24, sizeof(char));
     if(number)
-      run_on_quote(get_quote(number), !a, !c, !q, !n, col);
+    {
+      blockquote = get_quote(number);
+      sprintf(rm, "rm -f %lu", number);
+    }
     else if(last)
-      run_on_quote(get_last_quote(), !a, !c, !q, !n, col);
+    {
+      blockquote = get_last_quote();
+      sprintf(rm, "rm -f ./-1");
+    }
     else
-      run_on_quote(get_random_quote(), !a, !c, !q, !n, col);
+    {
+      blockquote = get_random_quote();
+      sprintf(rm, "rm -f ./0");
+    }
+    run_on_quote(blockquote, !a, !c, !q, !n, col, rm);
   }
   return 0;
 }
 
 void run_on_quote(char *blockquote, int a, int c, int q, int n,
-    unsigned long col)
+    unsigned long col, char *rm)
 {
   struct quotation *quotation = get_unformatted(blockquote);
   print_quotation(reformat(quotation, col), a, c, q, n, col);
   free(blockquote);
   free_quotation(quotation);
-  system("rm -f [0-9]*");
-  system("rm -f ./-[0-9]*");
+  system(rm);
+  free(rm);
 }
 
 void print_help(void)
