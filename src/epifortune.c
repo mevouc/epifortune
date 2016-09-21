@@ -1,8 +1,11 @@
-# include "epifortune.h"
 # include "html_operations.h"
 # include "quotation.h"
 # include <string.h>
 # include <stdlib.h>
+
+static void run_on_quote(char *blockquote, int a, int c, int q, int n,
+                         unsigned long col, char *rm);
+static void print_help(FILE * s);
 
 int main(int argc, char **argv)
 {
@@ -65,11 +68,17 @@ int main(int argc, char **argv)
   }
   if(shit)
   {
-    printf("epifortune: Invalid option '%s'\n", argv[shit]);
-    print_help();
+    fprintf(stderr, "epifortune: Invalid option '%s'\n", argv[shit]);
+    print_help(stderr);
+    return 1;
   }
-  else if(help || (last && number))
-    print_help();
+  else if (last && number)
+  {
+    print_help(stderr);
+    return 1;
+  }
+  else if(help)
+    print_help(stdout);
   else
   {
     col = col ? col : 80;
@@ -95,8 +104,8 @@ int main(int argc, char **argv)
   return 0;
 }
 
-void run_on_quote(char *blockquote, int a, int c, int q, int n,
-    unsigned long col, char *rm)
+static void run_on_quote(char *blockquote, int a, int c, int q, int n,
+                         unsigned long col, char *rm)
 {
   struct quotation *quotation = get_unformatted(blockquote);
   print_quotation(reformat(quotation, col), a, c, q, n, col);
@@ -106,38 +115,38 @@ void run_on_quote(char *blockquote, int a, int c, int q, int n,
   free(rm);
 }
 
-void print_help(void)
+static void print_help(FILE * s)
 {
-  printf("Usage: epifortune [global options]\n");
-  printf("\n");
-  printf("Global options:\n");
-  printf("  -h, --help           Prompt this help.\n");
-  printf("  -n, --number number  Print the number-th quote. If this option is");
-  printf(" not set, a\n");
-  printf("                       random quote will be printed.\n");
-  printf("  -l, --last           Print the last quote. You can't set this ");
-  printf(" option and\n");
-  printf("                       the --number one at the same time.\n");
-  printf("  -c, --conceal acqn   Hide one or more infos about the ");
-  printf("quotation:\n");
-  printf("                         * a - Author\n");
-  printf("                         * c - Context\n");
-  printf("                         * q - Quote\n");
-  printf("                         * n - Number\n");
-  printf("  -w, --wrap column    Word-wraps the message at about column ");
-  printf("columns, default\n");
-  printf("                       is 80 columns. Low values may cause odd ");
-  printf("display, use\n");
-  printf("                       them moderatly.\n");
-  printf("\n");
-  printf("Examples:\n");
-  printf("  epifortune\n");
-  printf("  epifortune --help\n");
-  printf("  epifortune -n 42 -c n\n");
-  printf("  epifortune -c aqn\n");
-  printf("  epifortune --last");
-  printf("\n");
-  printf("Provided by Meven 'mevouc' Courouble (http://vouc.me).\n");
-  printf("Code (https://github.com/mevouc/epifortune) under Beerware ");
-  printf("licence.\n");
+  fprintf(s, "Usage: epifortune [global options]\n");
+  fprintf(s, "\n");
+  fprintf(s, "Global options:\n");
+  fprintf(s, "  -h, --help           Prompt this help.\n");
+  fprintf(s, "  -n, --number number  Print the number-th quote. If this");
+  fprintf(s, " option is not set, a\n");
+  fprintf(s, "                       random quote will be printed.\n");
+  fprintf(s, "  -l, --last           Print the last quote. You can't set");
+  fprintf(s, " this option and\n");
+  fprintf(s, "                       the --number one at the same time.\n");
+  fprintf(s, "  -c, --conceal acqn   Hide one or more infos about the ");
+  fprintf(s, "quotation:\n");
+  fprintf(s, "                         * a - Author\n");
+  fprintf(s, "                         * c - Context\n");
+  fprintf(s, "                         * q - Quote\n");
+  fprintf(s, "                         * n - Number\n");
+  fprintf(s, "  -w, --wrap column    Word-wraps the message at about column ");
+  fprintf(s, "columns, default\n");
+  fprintf(s, "                       is 80 columns. Low values may cause odd ");
+  fprintf(s, "display, use\n");
+  fprintf(s, "                       them moderatly.\n");
+  fprintf(s, "\n");
+  fprintf(s, "Examples:\n");
+  fprintf(s, "  epifortune\n");
+  fprintf(s, "  epifortune --help\n");
+  fprintf(s, "  epifortune -n 42 -c n\n");
+  fprintf(s, "  epifortune -c aqn\n");
+  fprintf(s, "  epifortune --last");
+  fprintf(s, "\n");
+  fprintf(s, "Provided by Meven 'mevouc' Courouble (http://vouc.me).\n");
+  fprintf(s, "Code (https://github.com/mevouc/epifortune) under Beerware ");
+  fprintf(s, "licence.\n");
 }
