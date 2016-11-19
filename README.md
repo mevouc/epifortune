@@ -40,4 +40,4 @@ Contributors
 Licence
 -------
 
-Code under [Beerware](http://fr.wikipedia.org/wiki/Beerware) licence.
+Code under MIT licence.
